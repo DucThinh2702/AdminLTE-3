@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <title>Quản lý Danh mục - The Bag Studio</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #F1C40F;
+            --primary-dark: #D4AC0D;
+            --dark-color: #1a1d29;
+            --dark-light: #2c3142;
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --sidebar-width: 280px;
+            --header-height: 80px;
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Sidebar Styles - Same as previous pages */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: linear-gradient(135deg, var(--dark-color) 0%, var(--dark-light) 100%);
+            color: white;
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .brand-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: var(--dark-color);
+            padding: 10px 16px;
+            font-weight: 800;
+            font-size: 16px;
+            text-transform: uppercase;
+            border-radius: 8px;
+        }
+
+        .brand-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 10px 16px;
+            font-weight: 800;
+            font-size: 16px;
+            text-transform: uppercase;
+            border-radius: 8px;
+            margin-left: -4px;
+        }
+
+        .sidebar-nav {
+            padding: 24px 0;
+        }
+
+        .nav-section {
+            margin-bottom: 32px;
+        }
+
+        .nav-section-title {
+            padding: 0 20px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .nav-item {
+            margin-bottom: 4px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+            font-weight: 500;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary-color);
+            transform: scaleY(0);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateX(8px);
+        }
+
+        .nav-link.active::before {
+            transform: scaleY(1);
+        }
+
+        .nav-link i {
+            width: 24px;
+            margin-right: 16px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .nav-badge {
+            background: #e74c3c;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: auto;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            background: var(--bg-primary);
+        }
+
+        /* Header */
+        .admin-header {
+            background: var(--bg-secondary);
+            height: var(--header-height);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Content */
+        .content {
+            padding: 32px;
+        }
+
+        /* Category Tree */
+        .categories-layout {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 24px;
+        }
+
+        .category-tree {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            height: fit-content;
+        }
+
+        .tree-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tree-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .tree-item {
+            margin-bottom: 8px;
+        }
+
+        .tree-node {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .tree-node:hover {
+            background: var(--bg-primary);
+        }
+
+        .tree-node.active {
+            background: var(--primary-color);
+            color: var(--dark-color);
+        }
+
+        .tree-node.active .category-count {
+            color: var(--dark-color);
+        }
+
+        .tree-toggle {
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+        }
+
+        .tree-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-color);
+            margin-right: 12px;
+            font-size: 14px;
+        }
+
+        .tree-node.active .tree-icon {
+            background: var(--bg-secondary);
+            color: var(--primary-dark);
+        }
+
+        .category-info {
+            flex: 1;
+        }
+
+        .category-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .tree-node.active .category-name {
+            color: var(--dark-color);
+        }
+
+        .category-count {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .tree-actions {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .tree-node:hover .tree-actions {
+            opacity: 1;
+        }
+
+        .tree-action-btn {
+            width: 24px;
+            height: 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-edit-tree {
+            background: rgba(243, 156, 18, 0.1);
+            color: #f39c12;
+        }
+
+        .btn-edit-tree:hover {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-delete-tree {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .btn-delete-tree:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .tree-children {
+            margin-left: 40px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .tree-children.expanded {
+            display: block;
+        }
+
+        /* Category Details */
+        .category-details {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .details-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .details-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .details-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: var(--dark-color);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: var(--dark-color);
+            border-color: var(--primary-color);
+        }
+
+        .details-content {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(241, 196, 15, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .category-image {
+            width: 100%;
+            height: 200px;
+            background: var(--bg-primary);
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .category-image:hover {
+            border-color: var(--primary-color);
+            background: rgba(241, 196, 15, 0.05);
+        }
+
+        .category-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 16px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 32px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            background: var(--border-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .content {
+                padding: 16px;
+            }
+
+            .categories-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .category-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-logo">
+                <span class="brand-primary">The Bag</span>
+                <span class="brand-secondary">Studio</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Tổng quan</div>
+                <div class="nav-item">
+                    <a href="admin-dashboard-v2.html" class="nav-link">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="analytics.html" class="nav-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Phân tích</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="reports.html" class="nav-link">
+                        <i class="fas fa-file-chart-column"></i>
+                        <span>Báo cáo</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Quản lý</div>
+                <div class="nav-item">
+                    <a href="products.html" class="nav-link">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span>Sản phẩm</span>
+                        <span class="nav-badge">567</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="orders.html" class="nav-link">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Đơn hàng</span>
+                        <span class="nav-badge">24</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="customers.html" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        <span>Khách hàng</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="categories.html" class="nav-link active">
+                        <i class="fas fa-tags"></i>
+                        <span>Danh mục</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="inventory.html" class="nav-link">
+                        <i class="fas fa-warehouse"></i>
+                        <span>Kho hàng</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Marketing</div>
+                <div class="nav-item">
+                    <a href="campaigns.html" class="nav-link">
+                        <i class="fas fa-bullhorn"></i>
+                        <span>Chiến dịch</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="coupons.html" class="nav-link">
+                        <i class="fas fa-ticket-alt"></i>
+                        <span>Mã giảm giá</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="reviews.html" class="nav-link">
+                        <i class="fas fa-star"></i>
+                        <span>Đánh giá</span>
+                        <span class="nav-badge">12</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Hệ thống</div>
+                <div class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        <span>Cài đặt</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="users.html" class="nav-link">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Người dùng</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="backup.html" class="nav-link">
+                        <i class="fas fa-database"></i>
+                        <span>Sao lưu</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="login.html" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Đăng xuất</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="page-title">
+                <h1>Quản lý Danh mục</h1>
+                <div class="page-subtitle">Tổ chức và phân loại sản phẩm</div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="categories-layout">
+                <!-- Category Tree -->
+                <div class="category-tree">
+                    <div class="tree-header">
+                        <h3 class="tree-title">Cây danh mục</h3>
+                        <button class="btn btn-primary" onclick="addCategory()">
+                            <i class="fas fa-plus"></i>
+                            Thêm danh mục
+                        </button>
+                    </div>
+
+                    <div class="tree-item">
+                        <div class="tree-node active" onclick="selectCategory('bags')">
+                            <button class="tree-toggle" onclick="toggleTree(event, 'bags-children')">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="tree-icon">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                            <div class="category-info">
+                                <div class="category-name">Túi xách</div>
+                                <div class="category-count">156 sản phẩm</div>
+                            </div>
+                            <div class="tree-actions">
+                                <button class="tree-action-btn btn-edit-tree" onclick="editCategory('bags')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="tree-action-btn btn-delete-tree" onclick="deleteCategory('bags')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="tree-children expanded" id="bags-children">
+                            <div class="tree-item">
+                                <div class="tree-node" onclick="selectCategory('handbags')">
+                                    <button class="tree-toggle"></button>
+                                    <div class="tree-icon">
+                                        <i class="fas fa-hand-holding"></i>
+                                    </div>
+                                    <div class="category-info">
+                                        <div class="category-name">Túi xách tay</div>
+                                        <div class="category-count">89 sản phẩm</div>
+                                    </div>
+                                    <div class="tree-actions">
+                                        <button class="tree-action-btn btn-edit-tree">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="tree-action-btn btn-delete-tree">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tree-item">
+                                <div class="tree-node" onclick="selectCategory('shoulder-bags')">
+                                    <button class="tree-toggle"></button>
+                                    <div class="tree-icon">
+                                        <i class="fas fa-shopping-bag"></i>
+                                    </div>
+                                    <div class="category-info">
+                                        <div class="category-name">Túi đeo vai</div>
+                                        <div class="category-count">67 sản phẩm</div>
+                                    </div>
+                                    <div class="tree-actions">
+                                        <button class="tree-action-btn btn-edit-tree">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="tree-action-btn btn-delete-tree">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tree-item">
+                        <div class="tree-node" onclick="selectCategory('backpacks')">
+                            <button class="tree-toggle" onclick="toggleTree(event, 'backpacks-children')">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <div class="tree-icon">
+                                <i class="fas fa-backpack"></i>
+                            </div>
+                            <div class="category-info">
+                                <div class="category-name">Balo</div>
+                                <div class="category-count">134 sản phẩm</div>
+                            </div>
+                            <div class="tree-actions">
+                                <button class="tree-action-btn btn-edit-tree">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="tree-action-btn btn-delete-tree">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="tree-children" id="backpacks-children">
+                            <div class="tree-item">
+                                <div class="tree-node" onclick="selectCategory('travel-backpacks')">
+                                    <button class="tree-toggle"></button>
+                                    <div class="tree-icon">
+                                        <i class="fas fa-plane"></i>
+                                    </div>
+                                    <div class="category-info">
+                                        <div class="category-name">Balo du lịch</div>
+                                        <div class="category-count">78 sản phẩm</div>
+                                    </div>
+                                    <div class="tree-actions">
+                                        <button class="tree-action-btn btn-edit-tree">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="tree-action-btn btn-delete-tree">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tree-item">
+                                <div class="tree-node" onclick="selectCategory('school-backpacks')">
+                                    <button class="tree-toggle"></button>
+                                    <div class="tree-icon">
+                                        <i class="fas fa-graduation-cap"></i>
+                                    </div>
+                                    <div class="category-info">
+                                        <div class="category-name">Balo học sinh</div>
+                                        <div class="category-count">56 sản phẩm</div>
+                                    </div>
+                                    <div class="tree-actions">
+                                        <button class="tree-action-btn btn-edit-tree">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="tree-action-btn btn-delete-tree">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tree-item">
+                        <div class="tree-node" onclick="selectCategory('wallets')">
+                            <button class="tree-toggle"></button>
+                            <div class="tree-icon">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <div class="category-info">
+                                <div class="category-name">Ví</div>
+                                <div class="category-count">98 sản phẩm</div>
+                            </div>
+                            <div class="tree-actions">
+                                <button class="tree-action-btn btn-edit-tree">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="tree-action-btn btn-delete-tree">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tree-item">
+                        <div class="tree-node" onclick="selectCategory('briefcases')">
+                            <button class="tree-toggle"></button>
+                            <div class="tree-icon">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="category-info">
+                                <div class="category-name">Cặp công sở</div>
+                                <div class="category-count">76 sản phẩm</div>
+                            </div>
+                            <div class="tree-actions">
+                                <button class="tree-action-btn btn-edit-tree">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="tree-action-btn btn-delete-tree">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tree-item">
+                        <div class="tree-node" onclick="selectCategory('luggage')">
+                            <button class="tree-toggle"></button>
+                            <div class="tree-icon">
+                                <i class="fas fa-suitcase"></i>
+                            </div>
+                            <div class="category-info">
+                                <div class="category-name">Vali</div>
+                                <div class="category-count">34 sản phẩm</div>
+                            </div>
+                            <div class="tree-actions">
+                                <button class="tree-action-btn btn-edit-tree">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="tree-action-btn btn-delete-tree">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category Details -->
+                <div class="category-details">
+                    <div class="details-header">
+                        <h3 class="details-title">Chi tiết danh mục: Túi xách</h3>
+                        <div class="details-actions">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-eye"></i>
+                                Xem sản phẩm
+                            </button>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                Lưu thay đổi
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="details-content">
+                        <form id="categoryForm">
+                            <div class="form-group">
+                                <label class="form-label">Tên danh mục</label>
+                                <input type="text" class="form-control" value="Túi xách" placeholder="Nhập tên danh mục">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Slug URL</label>
+                                <input type="text" class="form-control" value="tui-xach" placeholder="tui-xach">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Danh mục cha</label>
+                                    <select class="form-control">
+                                        <option value="">-- Không có --</option>
+                                        <option value="bags">Túi xách</option>
+                                        <option value="backpacks">Balo</option>
+                                        <option value="wallets">Ví</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Thứ tự hiển thị</label>
+                                    <input type="number" class="form-control" value="1" placeholder="1">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Mô tả</label>
+                                <textarea class="form-control" rows="4" placeholder="Nhập mô tả danh mục">Bộ sưu tập túi xách cao cấp với thiết kế hiện đại và chất liệu da thật. Phù hợp cho mọi dịp từ công việc đến dạo phố.</textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Hình ảnh danh mục</label>
+                                <div class="category-image" onclick="document.getElementById('categoryImage').click()">
+                                    <div>
+                                        <i class="fas fa-cloud-upload-alt" style="font-size: 48px; margin-bottom: 16px;"></i>
+                                        <div>Nhấp để tải lên hình ảnh</div>
+                                    </div>
+                                    <input type="file" id="categoryImage" style="display: none;" accept="image/*">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Từ khóa SEO</label>
+                                <input type="text" class="form-control" placeholder="túi xách, túi da, túi nữ, túi cao cấp">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Mô tả SEO</label>
+                                <textarea class="form-control" rows="3" placeholder="Mô tả ngắn gọn cho SEO (160 ký tự)">Khám phá bộ sưu tập túi xách cao cấp tại The Bag Studio. Thiết kế hiện đại, chất liệu da thật, giá cả hợp lý.</textarea>
+                            </div>
+                        </form>
+
+                        <div class="category-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">156</div>
+                                <div class="stat-label">Sản phẩm</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">₫45.2M</div>
+                                <div class="stat-label">Doanh thu</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">1,247</div>
+                                <div class="stat-label">Lượt xem</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Thêm danh mục mới</h3>
+                <button class="close-btn" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addCategoryForm">
+                <div class="form-group">
+                    <label class="form-label">Tên danh mục</label>
+                    <input type="text" class="form-control" id="newCategoryName" placeholder="Nhập tên danh mục" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Danh mục cha</label>
+                    <select class="form-control" id="parentCategory">
+                        <option value="">-- Danh mục gốc --</option>
+                        <option value="bags">Túi xách</option>
+                        <option value="backpacks">Balo</option>
+                        <option value="wallets">Ví</option>
+                        <option value="briefcases">Cặp công sở</option>
+                        <option value="luggage">Vali</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Icon</label>
+                        <select class="form-control" id="categoryIcon">
+                            <option value="fas fa-shopping-bag">Túi xách</option>
+                            <option value="fas fa-backpack">Balo</option>
+                            <option value="fas fa-wallet">Ví</option>
+                            <option value="fas fa-briefcase">Cặp</option>
+                            <option value="fas fa-suitcase">Vali</option>
+                            <option value="fas fa-tags">Khác</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Thứ tự</label>
+                        <input type="number" class="form-control" id="categoryOrder" value="1" min="1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Mô tả</label>
+                    <textarea class="form-control" id="categoryDescription" rows="3" placeholder="Nhập mô tả danh mục"></textarea>
+                </div>
+
+                <div style="margin-top: 32px; display: flex; gap: 12px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-outline" onclick="closeModal()">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Thêm danh mục</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Tree functions
+        function toggleTree(event, childrenId) {
+            event.stopPropagation();
+            const children = document.getElementById(childrenId);
+            const toggle = event.target;
+
+            if (children.classList.contains('expanded')) {
+                children.classList.remove('expanded');
+                toggle.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            } else {
+                children.classList.add('expanded');
+                toggle.innerHTML = '<i class="fas fa-chevron-down"></i>';
+            }
+        }
+
+        function selectCategory(categoryId) {
+            // Remove active class from all nodes
+            document.querySelectorAll('.tree-node').forEach(node => {
+                node.classList.remove('active');
+            });
+
+            // Add active class to clicked node
+            event.currentTarget.classList.add('active');
+
+            // Update details panel
+            updateCategoryDetails(categoryId);
+        }
+
+        function updateCategoryDetails(categoryId) {
+            const categories = {
+                'bags': {
+                    name: 'Túi xách',
+                    slug: 'tui-xach',
+                    description: 'Bộ sưu tập túi xách cao cấp với thiết kế hiện đại và chất liệu da thật.',
+                    products: 156,
+                    revenue: '₫45.2M',
+                    views: 1247
+                },
+                'backpacks': {
+                    name: 'Balo',
+                    slug: 'balo',
+                    description: 'Balo đa dụng cho học tập, công việc và du lịch.',
+                    products: 134,
+                    revenue: '₫32.8M',
+                    views: 987
+                },
+                'wallets': {
+                    name: 'Ví',
+                    slug: 'vi',
+                    description: 'Ví da cao cấp cho nam và nữ với nhiều kiểu dáng.',
+                    products: 98,
+                    revenue: '₫18.5M',
+                    views: 654
+                }
+            };
+
+            const category = categories[categoryId] || categories['bags'];
+
+            // Update form fields
+            document.querySelector('input[placeholder="Nhập tên danh mục"]').value = category.name;
+            document.querySelector('input[placeholder="tui-xach"]').value = category.slug;
+            document.querySelector('textarea[placeholder="Nhập mô tả danh mục"]').value = category.description;
+
+            // Update stats
+            const stats = document.querySelectorAll('.stat-value');
+            stats[0].textContent = category.products;
+            stats[1].textContent = category.revenue;
+            stats[2].textContent = category.views;
+
+            // Update title
+            document.querySelector('.details-title').textContent = `Chi tiết danh mục: ${category.name}`;
+        }
+
+        // Modal functions
+        function addCategory() {
+            document.getElementById('modalTitle').textContent = 'Thêm danh mục mới';
+            document.getElementById('addCategoryForm').reset();
+            document.getElementById('categoryModal').classList.add('show');
+        }
+
+        function editCategory(categoryId) {
+            event.stopPropagation();
+            document.getElementById('modalTitle').textContent = 'Chỉnh sửa danh mục';
+            // Load category data here
+            document.getElementById('categoryModal').classList.add('show');
+        }
+
+        function deleteCategory(categoryId) {
+            event.stopPropagation();
+            if (confirm('Bạn có chắc chắn muốn xóa danh mục này? Tất cả sản phẩm trong danh mục sẽ được chuyển về "Chưa phân loại".')) {
+                console.log('Deleting category:', categoryId);
+                // Implement delete logic
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('categoryModal').classList.remove('show');
+        }
+
+        // Form submission
+        document.getElementById('addCategoryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('newCategoryName').value,
+                parent: document.getElementById('parentCategory').value,
+                icon: document.getElementById('categoryIcon').value,
+                order: document.getElementById('categoryOrder').value,
+                description: document.getElementById('categoryDescription').value
+            };
+
+            console.log('Adding category:', formData);
+
+            // Show success message
+            alert('Danh mục đã được thêm thành công!');
+            closeModal();
+        });
+
+        // Category form save
+        document.getElementById('categoryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('Saving category changes...');
+            alert('Thay đổi đã được lưu thành công!');
+        });
+
+        // Image upload preview
+        document.getElementById('categoryImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageContainer = document.querySelector('.category-image');
+                    imageContainer.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('categoryModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Auto-generate slug from name
+        document.getElementById('newCategoryName').addEventListener('input', function(e) {
+            const name = e.target.value;
+            const slug = name.toLowerCase()
+                .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, 'a')
+                .replace(/[èéẹẻẽêềếệểễ]/g, 'e')
+                .replace(/[ìíịỉĩ]/g, 'i')
+                .replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, 'o')
+                .replace(/[ùúụủũưừứựửữ]/g, 'u')
+                .replace(/[ỳýỵỷỹ]/g, 'y')
+                .replace(/đ/g, 'd')
+                .replace(/[^a-z0-9]/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '');
+
+            // Update slug in main form if visible
+            const slugInput = document.querySelector('input[placeholder="tui-xach"]');
+            if (slugInput && name) {
+                slugInput.value = slug;
+            }
+        });
+    </script>
+</body>
+</html>

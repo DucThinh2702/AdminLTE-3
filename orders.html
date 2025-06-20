@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <title>Quản lý Đơn hàng - The Bag Studio</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #F1C40F;
+            --primary-dark: #D4AC0D;
+            --dark-color: #1a1d29;
+            --dark-light: #2c3142;
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --sidebar-width: 280px;
+            --header-height: 80px;
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Sidebar Styles - Same as products.html */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: linear-gradient(135deg, var(--dark-color) 0%, var(--dark-light) 100%);
+            color: white;
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .brand-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: var(--dark-color);
+            padding: 10px 16px;
+            font-weight: 800;
+            font-size: 16px;
+            text-transform: uppercase;
+            border-radius: 8px;
+        }
+
+        .brand-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 10px 16px;
+            font-weight: 800;
+            font-size: 16px;
+            text-transform: uppercase;
+            border-radius: 8px;
+            margin-left: -4px;
+        }
+
+        .sidebar-nav {
+            padding: 24px 0;
+        }
+
+        .nav-section {
+            margin-bottom: 32px;
+        }
+
+        .nav-section-title {
+            padding: 0 20px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .nav-item {
+            margin-bottom: 4px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+            font-weight: 500;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary-color);
+            transform: scaleY(0);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateX(8px);
+        }
+
+        .nav-link.active::before {
+            transform: scaleY(1);
+        }
+
+        .nav-link i {
+            width: 24px;
+            margin-right: 16px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .nav-badge {
+            background: #e74c3c;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: auto;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            background: var(--bg-primary);
+        }
+
+        /* Header */
+        .admin-header {
+            background: var(--bg-secondary);
+            height: var(--header-height);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Content */
+        .content {
+            padding: 32px;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .stat-card.pending::before {
+            background: linear-gradient(90deg, #f39c12, #e67e22);
+        }
+
+        .stat-card.processing::before {
+            background: linear-gradient(90deg, #3498db, #2980b9);
+        }
+
+        .stat-card.completed::before {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+        }
+
+        .stat-card.cancelled::before {
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .stat-card.pending .stat-icon {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .stat-card.processing .stat-icon {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .stat-card.completed .stat-icon {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .stat-card.cancelled .stat-icon {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Filters */
+        .filters-bar {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .filters-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-primary);
+            font-size: 14px;
+            min-width: 150px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* Orders Table */
+        .orders-container {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: var(--dark-color);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 2px solid var(--border-color);
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .orders-table th {
+            background: var(--bg-primary);
+            padding: 16px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .orders-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .orders-table tbody tr:hover {
+            background: var(--bg-primary);
+        }
+
+        .order-id {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .customer-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .customer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-color);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .customer-details h6 {
+            margin: 0;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .customer-details span {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .order-amount {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: rgba(243, 156, 18, 0.1);
+            color: #f39c12;
+        }
+
+        .status-processing {
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+        }
+
+        .status-completed {
+            background: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+        }
+
+        .status-cancelled {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .order-date {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-view {
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+        }
+
+        .btn-view:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-edit {
+            background: rgba(243, 156, 18, 0.1);
+            color: #f39c12;
+        }
+
+        .btn-edit:hover {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-delete {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .btn-delete:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        /* Order Detail Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 32px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            background: var(--border-color);
+        }
+
+        .order-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .detail-section {
+            background: var(--bg-primary);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .detail-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            font-size: 16px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .order-items {
+            margin-top: 24px;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .item-details {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .item-quantity {
+            margin: 0 20px;
+            font-weight: 600;
+        }
+
+        .item-price {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .content {
+                padding: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .orders-table {
+                font-size: 12px;
+            }
+
+            .orders-table th,
+            .orders-table td {
+                padding: 8px;
+            }
+
+            .order-details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-logo">
+                <span class="brand-primary">The Bag</span>
+                <span class="brand-secondary">Studio</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Tổng quan</div>
+                <div class="nav-item">
+                    <a href="admin-dashboard-v2.html" class="nav-link">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="analytics.html" class="nav-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Phân tích</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="reports.html" class="nav-link">
+                        <i class="fas fa-file-chart-column"></i>
+                        <span>Báo cáo</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Quản lý</div>
+                <div class="nav-item">
+                    <a href="products.html" class="nav-link">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span>Sản phẩm</span>
+                        <span class="nav-badge">567</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="orders.html" class="nav-link active">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Đơn hàng</span>
+                        <span class="nav-badge">24</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="customers.html" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        <span>Khách hàng</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="categories.html" class="nav-link">
+                        <i class="fas fa-tags"></i>
+                        <span>Danh mục</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="inventory.html" class="nav-link">
+                        <i class="fas fa-warehouse"></i>
+                        <span>Kho hàng</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Marketing</div>
+                <div class="nav-item">
+                    <a href="campaigns.html" class="nav-link">
+                        <i class="fas fa-bullhorn"></i>
+                        <span>Chiến dịch</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="coupons.html" class="nav-link">
+                        <i class="fas fa-ticket-alt"></i>
+                        <span>Mã giảm giá</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="reviews.html" class="nav-link">
+                        <i class="fas fa-star"></i>
+                        <span>Đánh giá</span>
+                        <span class="nav-badge">12</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Hệ thống</div>
+                <div class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        <span>Cài đặt</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="users.html" class="nav-link">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Người dùng</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="backup.html" class="nav-link">
+                        <i class="fas fa-database"></i>
+                        <span>Sao lưu</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="login.html" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Đăng xuất</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="page-title">
+                <h1>Quản lý Đơn hàng</h1>
+                <div class="page-subtitle">Theo dõi và xử lý đơn hàng</div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card pending">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">24</div>
+                            <div class="stat-label">Chờ xử lý</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card processing">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">18</div>
+                            <div class="stat-label">Đang xử lý</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card completed">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">156</div>
+                            <div class="stat-label">Hoàn thành</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card cancelled">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">7</div>
+                            <div class="stat-label">Đã hủy</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters-bar">
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label class="filter-label">Trạng thái</label>
+                        <select class="filter-select" id="statusFilter">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="pending">Chờ xử lý</option>
+                            <option value="processing">Đang xử lý</option>
+                            <option value="completed">Hoàn thành</option>
+                            <option value="cancelled">Đã hủy</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Thời gian</label>
+                        <select class="filter-select" id="timeFilter">
+                            <option value="">Tất cả thời gian</option>
+                            <option value="today">Hôm nay</option>
+                            <option value="week">Tuần này</option>
+                            <option value="month">Tháng này</option>
+                            <option value="quarter">Quý này</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Phương thức thanh toán</label>
+                        <select class="filter-select" id="paymentFilter">
+                            <option value="">Tất cả</option>
+                            <option value="cod">Thanh toán khi nhận hàng</option>
+                            <option value="bank">Chuyển khoản</option>
+                            <option value="card">Thẻ tín dụng</option>
+                            <option value="wallet">Ví điện tử</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Khu vực</label>
+                        <select class="filter-select" id="regionFilter">
+                            <option value="">Tất cả khu vực</option>
+                            <option value="north">Miền Bắc</option>
+                            <option value="central">Miền Trung</option>
+                            <option value="south">Miền Nam</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Table -->
+            <div class="orders-container">
+                <div class="table-header">
+                    <h3 class="table-title">Danh sách đơn hàng</h3>
+                    <div class="table-actions">
+                        <button class="btn btn-outline">
+                            <i class="fas fa-download"></i>
+                            Xuất Excel
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Tạo đơn hàng
+                        </button>
+                    </div>
+                </div>
+
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn hàng</th>
+                            <th>Khách hàng</th>
+                            <th>Sản phẩm</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày đặt</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="order-id">#ORD-1247</div>
+                            </td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-avatar">N</div>
+                                    <div class="customer-details">
+                                        <h6>Nguyễn Văn A</h6>
+                                        <span>nguyenvana@email.com</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>Túi xách da cao cấp</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">+2 sản phẩm khác</div>
+                            </td>
+                            <td>
+                                <div class="order-amount">₫1,250,000</div>
+                            </td>
+                            <td>
+                                <span class="status-badge status-pending">Chờ xử lý</span>
+                            </td>
+                            <td>
+                                <div class="order-date">15/12/2024</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">14:30</div>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn btn-view" onclick="viewOrder(1247)" title="Xem chi tiết">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn btn-edit" onclick="editOrder(1247)" title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn btn-delete" onclick="deleteOrder(1247)" title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="order-id">#ORD-1246</div>
+                            </td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-avatar">T</div>
+                                    <div class="customer-details">
+                                        <h6>Trần Thị B</h6>
+                                        <span>tranthib@email.com</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>Balo du lịch chống nước</div>
+                            </td>
+                            <td>
+                                <div class="order-amount">₫850,000</div>
+                            </td>
+                            <td>
+                                <span class="status-badge status-processing">Đang xử lý</span>
+                            </td>
+                            <td>
+                                <div class="order-date">14/12/2024</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">09:15</div>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn btn-view" onclick="viewOrder(1246)" title="Xem chi tiết">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn btn-edit" onclick="editOrder(1246)" title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn btn-delete" onclick="deleteOrder(1246)" title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="order-id">#ORD-1245</div>
+                            </td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-avatar">L</div>
+                                    <div class="customer-details">
+                                        <h6>Lê Văn C</h6>
+                                        <span>levanc@email.com</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>Ví da nam cao cấp</div>
+                            </td>
+                            <td>
+                                <div class="order-amount">₫450,000</div>
+                            </td>
+                            <td>
+                                <span class="status-badge status-completed">Hoàn thành</span>
+                            </td>
+                            <td>
+                                <div class="order-date">13/12/2024</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">16:45</div>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn btn-view" onclick="viewOrder(1245)" title="Xem chi tiết">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn btn-edit" onclick="editOrder(1245)" title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn btn-delete" onclick="deleteOrder(1245)" title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="order-id">#ORD-1244</div>
+                            </td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-avatar">P</div>
+                                    <div class="customer-details">
+                                        <h6>Phạm Thị D</h6>
+                                        <span>phamthid@email.com</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>Túi đeo chéo nữ</div>
+                            </td>
+                            <td>
+                                <div class="order-amount">₫680,000</div>
+                            </td>
+                            <td>
+                                <span class="status-badge status-cancelled">Đã hủy</span>
+                            </td>
+                            <td>
+                                <div class="order-date">12/12/2024</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">11:20</div>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn btn-view" onclick="viewOrder(1244)" title="Xem chi tiết">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn btn-edit" onclick="editOrder(1244)" title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn btn-delete" onclick="deleteOrder(1244)" title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="order-id">#ORD-1243</div>
+                            </td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-avatar">H</div>
+                                    <div class="customer-details">
+                                        <h6>Hoàng Văn E</h6>
+                                        <span>hoangvane@email.com</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>Cặp công sở da thật</div>
+                            </td>
+                            <td>
+                                <div class="order-amount">₫1,150,000</div>
+                            </td>
+                            <td>
+                                <span class="status-badge status-processing">Đang giao</span>
+                            </td>
+                            <td>
+                                <div class="order-date">11/12/2024</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">08:30</div>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn btn-view" onclick="viewOrder(1243)" title="Xem chi tiết">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn btn-edit" onclick="editOrder(1243)" title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn btn-delete" onclick="deleteOrder(1243)" title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Chi tiết đơn hàng #ORD-1247</h3>
+                <button class="close-btn" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="order-details-grid">
+                <div class="detail-section">
+                    <h4 class="detail-title">Thông tin đơn hàng</h4>
+                    <div class="detail-item">
+                        <span class="detail-label">Mã đơn hàng:</span>
+                        <span class="detail-value">#ORD-1247</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Ngày đặt:</span>
+                        <span class="detail-value">15/12/2024 14:30</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Trạng thái:</span>
+                        <span class="detail-value">
+                            <span class="status-badge status-pending">Chờ xử lý</span>
+                        </span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Phương thức thanh toán:</span>
+                        <span class="detail-value">Thanh toán khi nhận hàng</span>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4 class="detail-title">Thông tin khách hàng</h4>
+                    <div class="detail-item">
+                        <span class="detail-label">Họ tên:</span>
+                        <span class="detail-value">Nguyễn Văn A</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Email:</span>
+                        <span class="detail-value">nguyenvana@email.com</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Số điện thoại:</span>
+                        <span class="detail-value">0123 456 789</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Địa chỉ:</span>
+                        <span class="detail-value">123 Nguyễn Văn Linh, Q.7, TP.HCM</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-items">
+                <h4 class="detail-title">Sản phẩm đã đặt</h4>
+                <div class="item-row">
+                    <div class="item-info">
+                        <div class="item-name">Túi xách da cao cấp</div>
+                        <div class="item-details">Màu: Đen | Size: L | SKU: BAG001</div>
+                    </div>
+                    <div class="item-quantity">x2</div>
+                    <div class="item-price">₫1,250,000</div>
+                </div>
+                <div class="item-row">
+                    <div class="item-info">
+                        <div class="item-name">Ví da nam</div>
+                        <div class="item-details">Màu: Nâu | SKU: WAL001</div>
+                    </div>
+                    <div class="item-quantity">x1</div>
+                    <div class="item-price">₫450,000</div>
+                </div>
+
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                    <div class="detail-item">
+                        <span class="detail-label">Tạm tính:</span>
+                        <span class="detail-value">₫1,700,000</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Phí vận chuyển:</span>
+                        <span class="detail-value">₫30,000</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Giảm giá:</span>
+                        <span class="detail-value">-₫50,000</span>
+                    </div>
+                    <div class="detail-item" style="font-weight: 700; font-size: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color);">
+                        <span class="detail-label">Tổng cộng:</span>
+                        <span class="detail-value" style="color: var(--primary-dark);">₫1,680,000</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px; display: flex; gap: 12px; justify-content: flex-end;">
+                <button class="btn btn-outline" onclick="closeModal()">Đóng</button>
+                <button class="btn btn-primary">Cập nhật trạng thái</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Modal functions
+        function viewOrder(orderId) {
+            document.getElementById('modalTitle').textContent = `Chi tiết đơn hàng #ORD-${orderId}`;
+            document.getElementById('orderModal').classList.add('show');
+        }
+
+        function editOrder(orderId) {
+            console.log('Editing order:', orderId);
+            // Implement edit logic
+        }
+
+        function deleteOrder(orderId) {
+            if (confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')) {
+                console.log('Deleting order:', orderId);
+                // Implement delete logic
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('orderModal').classList.remove('show');
+        }
+
+        // Filter functions
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            const status = this.value;
+            console.log('Filter by status:', status);
+            // Implement filter logic
+        });
+
+        document.getElementById('timeFilter').addEventListener('change', function() {
+            const time = this.value;
+            console.log('Filter by time:', time);
+            // Implement filter logic
+        });
+
+        document.getElementById('paymentFilter').addEventListener('change', function() {
+            const payment = this.value;
+            console.log('Filter by payment:', payment);
+            // Implement filter logic
+        });
+
+        document.getElementById('regionFilter').addEventListener('change', function() {
+            const region = this.value;
+            console.log('Filter by region:', region);
+            // Implement filter logic
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('orderModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Real-time updates
+        function updateOrderStats() {
+            // Simulate real-time updates
+            console.log('Updating order statistics...');
+        }
+
+        setInterval(updateOrderStats, 30000);
+    </script>
+</body>
+</html>

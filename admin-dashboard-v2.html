@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <title>Admin Dashboard - The Bag Studio</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Admin Dashboard" name="keywords">
+    <meta content="Advanced Admin Dashboard for The Bag Studio" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --primary-color: #F1C40F;
+            --primary-dark: #D4AC0D;
+            --primary-light: #FCF3CF;
+            --dark-color: #1a1d29;
+            --dark-light: #2c3142;
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --text-muted: #95a5a6;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 80px;
+            --header-height: 80px;
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: linear-gradient(135deg, var(--dark-color) 0%, var(--dark-light) 100%);
+            color: white;
+            z-index: 1000;
+            transition: var(--transition);
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        .sidebar.collapsed .sidebar-header {
+            padding: 24px 10px;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .brand-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: var(--dark-color);
+            padding: 10px 16px;
+            font-weight: 800;
+            font-size: 16px;
+            text-transform: uppercase;
+            border-radius: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 10px 16px;
+            font-weight: 800;
+            font-size: 16px;
+            text-transform: uppercase;
+            border-radius: 8px;
+            margin-left: -4px;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar.collapsed .brand-logo {
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar.collapsed .brand-primary,
+        .sidebar.collapsed .brand-secondary {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+
+        .admin-info {
+            text-align: center;
+            opacity: 1;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .admin-info {
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .admin-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-color);
+            font-weight: 700;
+            font-size: 18px;
+            margin: 0 auto 12px;
+            border: 3px solid rgba(255,255,255,0.2);
+        }
+
+        .admin-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .admin-role {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-nav {
+            padding: 24px 0;
+        }
+
+        .nav-section {
+            margin-bottom: 32px;
+        }
+
+        .nav-section-title {
+            padding: 0 20px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.5);
+            opacity: 1;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .nav-section-title {
+            opacity: 0;
+            height: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 4px;
+            position: relative;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: var(--transition);
+            border-radius: 0;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary-color);
+            transform: scaleY(0);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateX(8px);
+        }
+
+        .nav-link.active::before {
+            transform: scaleY(1);
+        }
+
+        .nav-link i {
+            width: 24px;
+            height: 24px;
+            margin-right: 16px;
+            text-align: center;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar.collapsed .nav-link {
+            padding: 16px 20px;
+            justify-content: center;
+            transform: none;
+        }
+
+        .sidebar.collapsed .nav-link:hover,
+        .sidebar.collapsed .nav-link.active {
+            transform: none;
+        }
+
+        .sidebar.collapsed .nav-link span {
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-link i {
+            margin-right: 0;
+        }
+
+        .nav-badge {
+            background: #e74c3c;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: auto;
+            font-weight: 600;
+        }
+
+        .sidebar.collapsed .nav-badge {
+            display: none;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: var(--transition);
+            background: var(--bg-primary);
+        }
+
+        .main-content.expanded {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        /* Header */
+        .admin-header {
+            background: var(--bg-secondary);
+            height: var(--header-height);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 12px;
+            border-radius: 8px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .page-title {
+            margin: 0;
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-search {
+            position: relative;
+            width: 320px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 48px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--bg-primary);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(241, 196, 15, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .action-btn {
+            position: relative;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 12px;
+            border-radius: 12px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 12px;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .admin-profile:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-color);
+        }
+
+        .profile-avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-color);
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .profile-info h6 {
+            font-weight: 600;
+            font-size: 14px;
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .profile-info span {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 32px;
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 28px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card.revenue::before {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+        }
+
+        .stat-card.orders::before {
+            background: linear-gradient(90deg, #3498db, #2980b9);
+        }
+
+        .stat-card.customers::before {
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+        }
+
+        .stat-card.products::before {
+            background: linear-gradient(90deg, #9b59b6, #8e44ad);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .stat-card.revenue .stat-icon {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .stat-card.orders .stat-icon {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .stat-card.customers .stat-icon {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .stat-card.products .stat-icon {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .stat-change.positive {
+            color: #2ecc71;
+        }
+
+        .stat-change.negative {
+            color: #e74c3c;
+        }
+
+        .change-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        .stat-change.positive .change-icon {
+            background: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+        }
+
+        .stat-change.negative .change-icon {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .chart-container {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 28px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .chart-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .chart-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .chart-filters {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: var(--primary-color);
+            color: var(--dark-color);
+            border-color: var(--primary-color);
+        }
+
+        /* Activity Feed */
+        .activity-feed {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .activity-icon.order {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .activity-icon.user {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .activity-icon.product {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .activity-icon.payment {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .activity-description {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .activity-time {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        /* Data Tables */
+        .data-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .table-container {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 28px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .table-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: var(--dark-color);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-color: var(--primary-color);
+        }
+
+        .table {
+            width: 100%;
+            margin: 0;
+        }
+
+        .table th {
+            border: none;
+            font-weight: 700;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            padding: 16px 12px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table td {
+            border: none;
+            padding: 16px 12px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .table tbody tr:hover {
+            background: var(--bg-primary);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-completed {
+            background: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+        }
+
+        .status-pending {
+            background: rgba(243, 156, 18, 0.1);
+            color: #f39c12;
+        }
+
+        .status-cancelled {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .status-processing {
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn-small {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-view {
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+        }
+
+        .btn-view:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-edit {
+            background: rgba(243, 156, 18, 0.1);
+            color: #f39c12;
+        }
+
+        .btn-edit:hover {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-delete {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .btn-delete:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .data-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: var(--sidebar-collapsed);
+            }
+
+            .sidebar.collapsed {
+                width: 0;
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: var(--sidebar-collapsed);
+            }
+
+            .main-content.expanded {
+                margin-left: 0;
+            }
+
+            .admin-header {
+                padding: 0 16px;
+            }
+
+            .dashboard-content {
+                padding: 16px;
+            }
+
+            .header-search {
+                display: none;
+            }
+
+            .quick-stats {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .chart-container,
+            .table-container {
+                padding: 20px;
+            }
+        }
+
+        /* Loading States */
+        .loading-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        /* Custom Scrollbar for Sidebar */
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar slide-in" id="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-logo">
+                <span class="brand-primary">The Bag</span>
+                <span class="brand-secondary">Studio</span>
+            </div>
+            <div class="admin-info">
+                <div class="admin-avatar">A</div>
+                <div class="admin-name">Admin User</div>
+                <div class="admin-role">Quản trị viên</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Tổng quan</div>
+                <div class="nav-item">
+                    <a href="#dashboard" class="nav-link active" data-page="dashboard">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#analytics" class="nav-link" data-page="analytics">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Phân tích</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#reports" class="nav-link" data-page="reports">
+                        <i class="fas fa-file-chart-column"></i>
+                        <span>Báo cáo</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Quản lý</div>
+                <div class="nav-item">
+                    <a href="products.html" class="nav-link" data-page="products">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span>Sản phẩm</span>
+                        <span class="nav-badge">567</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="orders.html" class="nav-link" data-page="orders">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Đơn hàng</span>
+                        <span class="nav-badge">24</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#customers" class="nav-link" data-page="customers">
+                        <i class="fas fa-users"></i>
+                        <span>Khách hàng</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#categories" class="nav-link" data-page="categories">
+                        <i class="fas fa-tags"></i>
+                        <span>Danh mục</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#inventory" class="nav-link" data-page="inventory">
+                        <i class="fas fa-warehouse"></i>
+                        <span>Kho hàng</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Marketing</div>
+                <div class="nav-item">
+                    <a href="#campaigns" class="nav-link" data-page="campaigns">
+                        <i class="fas fa-bullhorn"></i>
+                        <span>Chiến dịch</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#coupons" class="nav-link" data-page="coupons">
+                        <i class="fas fa-ticket-alt"></i>
+                        <span>Mã giảm giá</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#reviews" class="nav-link" data-page="reviews">
+                        <i class="fas fa-star"></i>
+                        <span>Đánh giá</span>
+                        <span class="nav-badge">12</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Hệ thống</div>
+                <div class="nav-item">
+                    <a href="#settings" class="nav-link" data-page="settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Cài đặt</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#users" class="nav-link" data-page="users">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Người dùng</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#backup" class="nav-link" data-page="backup">
+                        <i class="fas fa-database"></i>
+                        <span>Sao lưu</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#logout" class="nav-link" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Đăng xuất</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content fade-in" id="mainContent">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="page-title">
+                    <h1>Dashboard</h1>
+                    <div class="page-subtitle">Tổng quan hoạt động cửa hàng</div>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <div class="header-search">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Tìm kiếm sản phẩm, đơn hàng, khách hàng...">
+                </div>
+
+                <div class="header-actions">
+                    <button class="action-btn" title="Thông báo">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">5</span>
+                    </button>
+                    <button class="action-btn" title="Tin nhắn">
+                        <i class="fas fa-envelope"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <button class="action-btn" title="Cài đặt nhanh">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+
+                <div class="admin-profile" onclick="toggleProfileMenu()">
+                    <div class="profile-avatar-small">A</div>
+                    <div class="profile-info">
+                        <h6>Admin User</h6>
+                        <span>Quản trị viên</span>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size: 12px; color: var(--text-muted);"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Quick Stats -->
+            <div class="quick-stats">
+                <div class="stat-card revenue">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">₫125.5M</div>
+                            <div class="stat-label">Doanh thu tháng này</div>
+                            <div class="stat-change positive">
+                                <div class="change-icon">
+                                    <i class="fas fa-arrow-up"></i>
+                                </div>
+                                <span>+12.5% so với tháng trước</span>
+                            </div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card orders">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">1,247</div>
+                            <div class="stat-label">Đơn hàng mới</div>
+                            <div class="stat-change positive">
+                                <div class="change-icon">
+                                    <i class="fas fa-arrow-up"></i>
+                                </div>
+                                <span>+8.2% so với tuần trước</span>
+                            </div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card customers">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">3,892</div>
+                            <div class="stat-label">Khách hàng hoạt động</div>
+                            <div class="stat-change positive">
+                                <div class="change-icon">
+                                    <i class="fas fa-arrow-up"></i>
+                                </div>
+                                <span>+15.3% khách hàng mới</span>
+                            </div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card products">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">567</div>
+                            <div class="stat-label">Sản phẩm trong kho</div>
+                            <div class="stat-change negative">
+                                <div class="change-icon">
+                                    <i class="fas fa-arrow-down"></i>
+                                </div>
+                                <span>-2.1% cần bổ sung</span>
+                            </div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div>
+                            <h3 class="chart-title">Doanh thu & Đơn hàng</h3>
+                            <div class="chart-subtitle">Thống kê theo thời gian</div>
+                        </div>
+                        <div class="chart-filters">
+                            <button class="filter-btn active">7 ngày</button>
+                            <button class="filter-btn">30 ngày</button>
+                            <button class="filter-btn">90 ngày</button>
+                            <button class="filter-btn">1 năm</button>
+                        </div>
+                    </div>
+                    <div id="revenueChart" style="height: 350px;"></div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div>
+                            <h3 class="chart-title">Hoạt động gần đây</h3>
+                            <div class="chart-subtitle">Cập nhật theo thời gian thực</div>
+                        </div>
+                    </div>
+                    <div class="activity-feed">
+                        <div class="activity-item">
+                            <div class="activity-icon order">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Đơn hàng mới #ORD-1247</div>
+                                <div class="activity-description">Nguyễn Văn A đã đặt mua Túi xách da cao cấp</div>
+                                <div class="activity-time">2 phút trước</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon user">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Khách hàng mới đăng ký</div>
+                                <div class="activity-description">Trần Thị B vừa tạo tài khoản mới</div>
+                                <div class="activity-time">5 phút trước</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon product">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Sản phẩm sắp hết hàng</div>
+                                <div class="activity-description">Balo du lịch chỉ còn 5 sản phẩm</div>
+                                <div class="activity-time">10 phút trước</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon payment">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Thanh toán thành công</div>
+                                <div class="activity-description">Đơn hàng #ORD-1245 đã được thanh toán</div>
+                                <div class="activity-time">15 phút trước</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon order">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Đơn hàng đã giao</div>
+                                <div class="activity-description">Đơn hàng #ORD-1240 đã được giao thành công</div>
+                                <div class="activity-time">30 phút trước</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon user">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Đánh giá mới</div>
+                                <div class="activity-description">Lê Văn C đã đánh giá 5 sao cho Ví da nam</div>
+                                <div class="activity-time">1 giờ trước</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Tables -->
+            <div class="data-section">
+                <div class="table-container">
+                    <div class="table-header">
+                        <div>
+                            <h3 class="table-title">Đơn hàng gần đây</h3>
+                        </div>
+                        <div class="table-actions">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-download"></i>
+                                Xuất Excel
+                            </button>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-plus"></i>
+                                Thêm đơn hàng
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Mã đơn</th>
+                                    <th>Khách hàng</th>
+                                    <th>Tổng tiền</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>#ORD-1247</strong></td>
+                                    <td>Nguyễn Văn A</td>
+                                    <td><strong>₫1,250,000</strong></td>
+                                    <td><span class="status-badge status-completed">Hoàn thành</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-small btn-view" title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="action-btn-small btn-edit" title="Chỉnh sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="action-btn-small btn-delete" title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>#ORD-1246</strong></td>
+                                    <td>Trần Thị B</td>
+                                    <td><strong>₫850,000</strong></td>
+                                    <td><span class="status-badge status-processing">Đang xử lý</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-small btn-view" title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="action-btn-small btn-edit" title="Chỉnh sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="action-btn-small btn-delete" title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>#ORD-1245</strong></td>
+                                    <td>Lê Văn C</td>
+                                    <td><strong>₫450,000</strong></td>
+                                    <td><span class="status-badge status-pending">Chờ thanh toán</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-small btn-view" title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="action-btn-small btn-edit" title="Chỉnh sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="action-btn-small btn-delete" title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>#ORD-1244</strong></td>
+                                    <td>Phạm Thị D</td>
+                                    <td><strong>₫680,000</strong></td>
+                                    <td><span class="status-badge status-cancelled">Đã hủy</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-small btn-view" title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="action-btn-small btn-edit" title="Chỉnh sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="action-btn-small btn-delete" title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <div>
+                            <h3 class="table-title">Sản phẩm bán chạy</h3>
+                        </div>
+                        <div class="table-actions">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-chart-bar"></i>
+                                Xem báo cáo
+                            </button>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-plus"></i>
+                                Thêm sản phẩm
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Danh mục</th>
+                                    <th>Đã bán</th>
+                                    <th>Doanh thu</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Túi xách da cao cấp</strong></td>
+                                    <td>Túi xách</td>
+                                    <td><strong>156</strong></td>
+                                    <td><strong>₫19.5M</strong></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-small btn-view" title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="action-btn-small btn-edit" title="Chỉnh sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Balo du lịch</strong></td>
+                                    <td>Balo</td>
+                                    <td><strong>134</strong></td>
+                                    <td><strong>₫11.4M</strong></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-small btn-view" title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="action-btn-small btn-edit" title="Chỉnh sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ví da nam</strong></td>
+                                    <td>Ví</td>
+                                    <td><strong>98</strong></td>
+                                    <td><strong>₫4.4M</strong></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-small btn-view" title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="action-btn-small btn-edit" title="Chỉnh sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Cặp công sở</strong></td>
+                                    <td>Cặp</td>
+                                    <td><strong>76</strong></td>
+                                    <td><strong>₫8.7M</strong></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-small btn-view" title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="action-btn-small btn-edit" title="Chỉnh sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Sidebar Toggle
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+
+            // Save state to localStorage
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+        });
+
+        // Restore sidebar state
+        document.addEventListener('DOMContentLoaded', function() {
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (isCollapsed) {
+                document.getElementById('sidebar').classList.add('collapsed');
+                document.getElementById('mainContent').classList.add('expanded');
+            }
+        });
+
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.getAttribute('href') !== '#logout') {
+                    e.preventDefault();
+
+                    // Remove active class from all links
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+
+                    // Add active class to clicked link
+                    this.classList.add('active');
+
+                    // Update page title
+                    const pageTitle = this.querySelector('span').textContent;
+                    document.querySelector('.page-title h1').textContent = pageTitle;
+
+                    // Update subtitle based on page
+                    const subtitles = {
+                        'Dashboard': 'Tổng quan hoạt động cửa hàng',
+                        'Phân tích': 'Báo cáo chi tiết và thống kê',
+                        'Sản phẩm': 'Quản lý danh mục sản phẩm',
+                        'Đơn hàng': 'Theo dõi và xử lý đơn hàng',
+                        'Khách hàng': 'Quản lý thông tin khách hàng',
+                        'Cài đặt': 'Cấu hình hệ thống'
+                    };
+
+                    document.querySelector('.page-subtitle').textContent = subtitles[pageTitle] || 'Quản lý hệ thống';
+
+                    // Load page content
+                    loadPageContent(this.dataset.page);
+                }
+            });
+        });
+
+        // Load page content (placeholder function)
+        function loadPageContent(page) {
+            console.log('Loading page:', page);
+            // Add loading animation
+            document.querySelector('.dashboard-content').style.opacity = '0.5';
+
+            // Simulate loading
+            setTimeout(() => {
+                document.querySelector('.dashboard-content').style.opacity = '1';
+                console.log('Page loaded:', page);
+            }, 300);
+        }
+
+        // Profile menu toggle
+        function toggleProfileMenu() {
+            console.log('Profile menu clicked');
+            // Create dropdown menu
+            const dropdown = document.createElement('div');
+            dropdown.className = 'profile-dropdown';
+            dropdown.innerHTML = `
+                <div class="dropdown-item">
+                    <i class="fas fa-user"></i>
+                    <span>Hồ sơ cá nhân</span>
+                </div>
+                <div class="dropdown-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Cài đặt tài khoản</span>
+                </div>
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Đăng xuất</span>
+                </div>
+            `;
+            // Position and show dropdown
+            // Implementation would go here
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                // Add logout animation
+                document.body.style.opacity = '0';
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 300);
+            }
+        }
+
+        // Initialize Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Revenue Chart with ApexCharts
+            const revenueOptions = {
+                series: [{
+                    name: 'Doanh thu',
+                    data: [85, 92, 78, 105, 98, 110, 125, 118, 135, 142, 128, 155]
+                }, {
+                    name: 'Đơn hàng',
+                    data: [45, 52, 38, 65, 58, 70, 85, 78, 95, 102, 88, 115]
+                }],
+                chart: {
+                    height: 350,
+                    type: 'area',
+                    toolbar: {
+                        show: false
+                    },
+                    zoom: {
+                        enabled: false
+                    }
+                },
+                colors: ['#F1C40F', '#3498DB'],
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 3
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.7,
+                        opacityTo: 0.1,
+                    }
+                },
+                grid: {
+                    borderColor: '#e2e8f0',
+                    strokeDashArray: 5,
+                },
+                xaxis: {
+                    categories: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    labels: {
+                        formatter: function (val) {
+                            return val + 'M'
+                        }
+                    }
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return val + ' triệu VNĐ'
+                        }
+                    }
+                },
+                legend: {
+                    position: 'top',
+                    horizontalAlign: 'right'
+                }
+            };
+
+            const revenueChart = new ApexCharts(document.querySelector("#revenueChart"), revenueOptions);
+            revenueChart.render();
+        });
+
+        // Chart filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                // Update chart data based on filter
+                const period = this.textContent;
+                console.log('Filter changed to:', period);
+
+                // Add loading effect
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                setTimeout(() => {
+                    this.textContent = period;
+                    // Here you would update the chart with new data
+                }, 500);
+            });
+        });
+
+        // Action buttons with confirmation
+        document.querySelectorAll('.action-btn-small').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const action = this.classList.contains('btn-view') ? 'view' :
+                              this.classList.contains('btn-edit') ? 'edit' : 'delete';
+                const row = this.closest('tr');
+                const itemId = row.querySelector('td:first-child strong').textContent;
+
+                if (action === 'delete') {
+                    if (confirm(`Bạn có chắc chắn muốn xóa ${itemId}?`)) {
+                        // Add delete animation
+                        row.style.opacity = '0.5';
+                        row.style.transform = 'translateX(-20px)';
+
+                        setTimeout(() => {
+                            console.log('Deleting:', itemId);
+                            // Implement actual delete logic here
+                        }, 300);
+                    }
+                } else {
+                    console.log(`${action}:`, itemId);
+                    // Implement view/edit logic
+                }
+            });
+        });
+
+        // Search functionality
+        document.querySelector('.search-input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            console.log('Searching for:', searchTerm);
+
+            // Add search logic here
+            if (searchTerm.length > 2) {
+                // Show search results
+                console.log('Showing search results for:', searchTerm);
+            }
+        });
+
+        // Real-time updates simulation
+        function updateStats() {
+            // Simulate real-time stat updates
+            const statValues = document.querySelectorAll('.stat-value');
+            statValues.forEach(stat => {
+                const currentValue = stat.textContent;
+                // Add subtle animation for updates
+                stat.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    stat.style.transform = 'scale(1)';
+                }, 200);
+            });
+        }
+
+        // Auto-refresh data every 30 seconds
+        setInterval(updateStats, 30000);
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+                <button class="notification-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + K for search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                document.querySelector('.search-input').focus();
+            }
+
+            // Ctrl/Cmd + B for sidebar toggle
+            if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+                e.preventDefault();
+                document.getElementById('sidebarToggle').click();
+            }
+        });
+
+        // Theme toggle (if needed)
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            localStorage.setItem('darkTheme', document.body.classList.contains('dark-theme'));
+        }
+
+        // Initialize tooltips
+        document.querySelectorAll('[title]').forEach(element => {
+            element.addEventListener('mouseenter', function() {
+                const tooltip = document.createElement('div');
+                tooltip.className = 'tooltip';
+                tooltip.textContent = this.getAttribute('title');
+                document.body.appendChild(tooltip);
+
+                const rect = this.getBoundingClientRect();
+                tooltip.style.left = rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2) + 'px';
+                tooltip.style.top = rect.top - tooltip.offsetHeight - 8 + 'px';
+            });
+
+            element.addEventListener('mouseleave', function() {
+                const tooltip = document.querySelector('.tooltip');
+                if (tooltip) tooltip.remove();
+            });
+        });
+
+        // Performance monitoring
+        window.addEventListener('load', function() {
+            const loadTime = performance.now();
+            console.log(`Dashboard loaded in ${Math.round(loadTime)}ms`);
+
+            // Show success notification
+            setTimeout(() => {
+                showNotification('Dashboard đã tải thành công!', 'success');
+            }, 500);
+        });
+
+        // Error handling
+        window.addEventListener('error', function(e) {
+            console.error('Dashboard error:', e.error);
+            showNotification('Đã xảy ra lỗi. Vui lòng thử lại!', 'error');
+        });
+
+        // Add CSS for notifications and tooltips
+        const additionalStyles = `
+            <style>
+                .notification {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: white;
+                    padding: 16px 20px;
+                    border-radius: 8px;
+                    box-shadow: var(--shadow-lg);
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    z-index: 10000;
+                    animation: slideInRight 0.3s ease-out;
+                    border-left: 4px solid var(--primary-color);
+                }
+
+                .notification-success {
+                    border-left-color: #2ecc71;
+                }
+
+                .notification-error {
+                    border-left-color: #e74c3c;
+                }
+
+                .notification-close {
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    color: var(--text-muted);
+                    margin-left: auto;
+                }
+
+                .tooltip {
+                    position: absolute;
+                    background: var(--dark-color);
+                    color: white;
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                    font-size: 12px;
+                    z-index: 10000;
+                    pointer-events: none;
+                    animation: fadeIn 0.2s ease-out;
+                }
+
+                @keyframes slideInRight {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+            </style>
+        `;
+
+        document.head.insertAdjacentHTML('beforeend', additionalStyles);
+    </script>
+</body>
+
+</html>
